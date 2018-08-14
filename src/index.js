@@ -25,6 +25,7 @@ export default function ({ types }) {
           plugins = opts.map(({
             libraryName,
             libraryDirectory,
+            styleLibraryDirectory,
             style,
             camel2DashComponentName,
             camel2UnderlineComponentName,
@@ -35,6 +36,7 @@ export default function ({ types }) {
             return new Plugin(
               libraryName,
               libraryDirectory,
+              styleLibraryDirectory,
               style,
               camel2DashComponentName,
               camel2UnderlineComponentName,
@@ -49,6 +51,7 @@ export default function ({ types }) {
             new Plugin(
               opts.libraryName,
               opts.libraryDirectory,
+              opts.styleLibraryDirectory,
               opts.style,
               opts.camel2DashComponentName,
               opts.camel2UnderlineComponentName,

@@ -19,6 +19,7 @@ export default class Plugin {
   constructor(
     libraryName,
     libraryDirectory,
+    styleLibraryDirectory,
     style,
     camel2DashComponentName,
     camel2UnderlineComponentName,
@@ -33,6 +34,7 @@ export default class Plugin {
     this.libraryDirectory = typeof libraryDirectory === 'undefined'
       ? 'lib'
       : libraryDirectory;
+    this.styleLibraryDirectory = styleLibraryDirectory;
     this.camel2DashComponentName = typeof camel2DashComponentName === 'undefined'
       ? true
       : camel2DashComponentName;
@@ -52,6 +54,7 @@ export default class Plugin {
   importMethod(methodName, file) {
     if (!this.selectedMethods[methodName]) {
       const libraryDirectory = this.libraryDirectory;
+      const styleLibraryDirectory = this.styleLibraryDirectory;
       const style = this.style;
       const transformedMethodName = this.camel2UnderlineComponentName  // eslint-disable-line
         ? camel2Underline(methodName)
@@ -61,13 +64,23 @@ export default class Plugin {
       const path = winPath(
         this.customName ? this.customName(transformedMethodName) : join(this.libraryName, libraryDirectory, transformedMethodName, this.fileName) // eslint-disable-line
       );
+      let stylePath = '';
+      if (!!styleLibraryDirectory) {
+        stylePath = winPath(
+          this.customName ? this.customName(transformedMethodName) : join(this.libraryName, styleLibraryDirectory, transformedMethodName, this.fileName) // eslint-disable-line
+        );
+      } else {
+        stylePath = path;
+      }
       this.selectedMethods[methodName] = addDefault(file.path, path, { nameHint: methodName });
       if (style === true) {
-        addSideEffect(file.path, `${path}/style`);
+        addSideEffect(file.path, `${stylePath}/style`);
       } else if (style === 'css') {
-        addSideEffect(file.path, `${path}/style/css`);
+        addSideEffect(file.path, `${stylePath}/style/css`);
+      } else if (style === 'ivuel') {
+        addSideEffect(file.path, `ivuel/src/styles/components/${transformedMethodName}.less`);
       } else if (typeof style === 'function') {
-        const stylePath = style(path, file);
+        stylePath = style(path, file);
         if (stylePath) {
           addSideEffect(file.path, stylePath);
         }
